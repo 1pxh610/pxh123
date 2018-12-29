@@ -1,0 +1,83 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<deque>
+#include<vector>
+using namespace std;
+int dp[25][25][25][25][4][4];
+char a[25][25];
+int dir[4][2];
+struct node{
+	int x1,y1,x2,y2,f1,f2;
+};
+int ju(node f){
+	if(!dp[f.x1][f.y1][f.x2][f.y2][f.f1][f.f2])return 1;
+	return 0;
+}
+deque<node>sp;
+int main(){
+	int n,i;
+	scanf("%d",&n);
+	for(i=1;i<=n;i++){
+		scanf("%s",a[n-i+1]+1);
+	}
+	dir[0][0]=0;
+	dir[0][1]=1;
+	dir[1][0]=1;
+	dir[1][1]=0;
+	dir[2][0]=0;
+	dir[2][1]=-1;
+	dir[3][0]=-1;
+	dir[3][1]=0;
+	dp[1][1][1][1][0][1]=1;
+	node p=(node){1,1,1,1,0,1};
+	sp.push_back(p);
+	while(!sp.empty()){
+		node f=sp.front();
+		sp.pop_front();
+		int tp=dp[f.x1][f.y1][f.x2][f.y2][f.f1][f.f2];
+		if(f.x1==n&&f.x2==n&&f.y1==n&&f.y2==n){
+			printf("%d\n",tp-1);
+			return 0;
+		}
+		node now=f;
+		now.f1=(now.f1+1)%4;
+		now.f2=(now.f2+1)%4;
+		if(ju(now)){
+			dp[now.x1][now.y1][now.x2][now.y2][now.f1][now.f2]=tp+1;
+			sp.push_back(now);
+		}
+		now=f;
+		now.f1-=1;
+		if(now.f1==-1)now.f1=3;
+		now.f2-=1;
+		if(now.f2==-1)now.f2=3;
+		if(ju(now)){
+			dp[now.x1][now.y1][now.x2][now.y2][now.f1][now.f2]=tp+1;
+			sp.push_back(now);
+		}
+		now=f;
+		if(now.x1!=n||now.y1!=n){
+			now.x1+=dir[now.f1][0];
+			now.y1+=dir[now.f1][1];
+			if(!(now.x1>=1&&now.x1<=n&&now.y1>=1&&now.y1<=n&&a[now.x1][now.y1]!='H')){
+				now.x1=f.x1;
+				now.y1=f.y1;
+			}
+		}
+		if(now.x2!=n||now.y2!=n){
+			now.x2+=dir[now.f2][0];
+			now.y2+=dir[now.f2][1];
+			if(!(now.x2>=1&&now.x2<=n&&now.y2>=1&&now.y2<=n&&a[now.x2][now.y2]!='H')){
+				now.x2=f.x2;
+				now.y2=f.y2;
+			}
+		}
+		if(ju(now)){
+			dp[now.x1][now.y1][now.x2][now.y2][now.f1][now.f2]=tp+1;
+			sp.push_back(now);
+		}
+	}
+	return 0;
+}
